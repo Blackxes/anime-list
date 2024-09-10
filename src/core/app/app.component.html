@@ -1,0 +1,16 @@
+<p>My Application</p>
+<test-retrieve-animes />
+
+<input [(ngModel)]="searchQuery" />
+<button (click)="query()">Search you whore!</button>
+
+<pre>
+  @if (result()?.length == 0)
+  {
+    <p>No results yet</p>
+  }
+  @else {
+    <p>Results:</p>
+    {{ result() | json }}
+  }
+</pre>
