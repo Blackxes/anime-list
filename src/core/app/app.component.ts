@@ -1,8 +1,9 @@
 import { JsonPipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { TestRetrieveAnimesComponent } from "@api/anime";
-import { Anilist, SearchAnime } from "@tdanks2000/anilist-wrapper";
+import { AnimeApiService, TestRetrieveAnimesComponent } from "@api/anime";
+import { debounceTime, Subject } from "rxjs";
+import { ISearchResult } from "../../modules/anime-api/service/anime-api.types";
 
 @Component({
   selector: "app-root",
@@ -14,13 +15,22 @@ import { Anilist, SearchAnime } from "@tdanks2000/anilist-wrapper";
 export class AppComponent {
   public title = "Komische Animeliste";
   public searchQuery = signal<string>("");
-  public result = signal<SearchAnime[] | undefined>(undefined);
+  public result = signal<ISearchResult | undefined>(undefined);
+  private searchSubject = new Subject<string>();
 
-  public async query() {
-    const anilist = new Anilist();
-    const result = await anilist.search.anime(this.searchQuery());
-    const data = result.data.Page.media;
+  constructor(private apiservice: AnimeApiService) {
+    this.searchSubject
+      .pipe(debounceTime(2000))
+      .subscribe((searchString: string) => this.query(searchString));
+  }
 
-    this.result.set(data);
+  public async query(queryString: string) {
+    const result = await this.apiservice.searchAnimes(queryString);
+
+    this.result.set(result);
+  }
+
+  public onSearch() {
+    this.searchSubject.next(this.searchQuery());
   }
 }

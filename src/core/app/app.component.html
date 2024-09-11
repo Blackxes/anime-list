@@ -1,11 +1,11 @@
 <p>My Application</p>
 <test-retrieve-animes />
 
-<input [(ngModel)]="searchQuery" />
-<button (click)="query()">Search you whore!</button>
+<input class="border border-yellow-700" [(ngModel)]="searchQuery" (input)="onSearch()" />
+<!-- <button (click)="query()">Search you whore!</button> -->
 
 <pre>
-  @if (result()?.length == 0)
+  @if (result()?.items?.length == 0)
   {
     <p>No results yet</p>
   }
